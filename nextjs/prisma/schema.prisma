@@ -16,3 +16,46 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// webhook to create user in DB on sign in
+model User {
+  id        String     @id @unique
+  name      String
+  email     String     @unique
+  clerkId   String
+  mySongs   mySong[]
+  myArtists myArtist[]
+}
+
+model Song {
+  id          String      @id @unique
+  videoId     String
+  mySongs     mySong[]
+  publicSongs publicSong?
+}
+
+model mySong {
+  id        String  @id @unique
+  songId    String  @unique
+  song      Song    @relation(fields: [songId], references: [id])
+  favourite Boolean
+  clicked   Int
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model publicSong {
+  id        String  @id @unique
+  songId    String  @unique
+  song      Song    @relation(fields: [songId], references: [id])
+  favourite Boolean
+  clicked   Int
+}
+
+model myArtist {
+  id       String @id @unique
+  artistId String @unique
+  clicked  Int
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+}
