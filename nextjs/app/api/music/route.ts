@@ -4,7 +4,7 @@ const yt = new YT();
 export async function GET(req: NextRequest) {
   try {
     await yt.initialize();
-    const videos = await yt.searchSongs("pop songs");
+    const videos = await yt.searchSongs("saiyaara");
     console.log(videos, "videos");
     return new Response(JSON.stringify(videos), { status: 200 });
   } catch (error) {

@@ -19,23 +19,23 @@ datasource db {
 
 // webhook to create user in DB on sign in
 model User {
-  id        String     @id @unique
+  id        String     @id @unique @default(cuid())
   name      String
   email     String     @unique
-  clerkId   String
+  clerkId   String     @unique
   mySongs   mySong[]
   myArtists myArtist[]
 }
 
 model Song {
-  id          String      @id @unique
-  videoId     String
+  id          String      @id @unique @default(cuid())
+  videoId     String      @unique
   mySongs     mySong[]
   publicSongs publicSong?
 }
 
 model mySong {
-  id        String  @id @unique
+  id        String  @id @unique @default(cuid())
   songId    String  @unique
   song      Song    @relation(fields: [songId], references: [id])
   favourite Boolean
@@ -45,17 +45,26 @@ model mySong {
 }
 
 model publicSong {
-  id        String  @id @unique
-  songId    String  @unique
-  song      Song    @relation(fields: [songId], references: [id])
-  favourite Boolean
-  clicked   Int
+  id     String @id @unique @default(cuid())
+  songId String @unique
+  song   Song   @relation(fields: [songId], references: [id])
+
+  clicked Int
 }
 
 model myArtist {
-  id       String @id @unique
+  id       String @id @unique @default(cuid())
   artistId String @unique
   clicked  Int
   user     User   @relation(fields: [userId], references: [id])
   userId   String
+}
+
+// we will track today trending searches
+model TrendingSearch {
+  id       String   @id @unique @default(cuid())
+  search   String
+  searches Int
+  videoId  String
+  created  DateTime
 }
