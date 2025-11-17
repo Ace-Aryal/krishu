@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { startOfDay } from "date-fns";
 import Yt from "ytmusic-api";
+import z from "zod";
 //  for later
 export async function GET(req: NextRequest) {
   try {
@@ -33,4 +34,52 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PUT (req: NextRequest){}
+export async function PUT(req: NextRequest) {
+  try {
+    const res = await req.json();
+    const { success, data, error } = z
+      .object({
+        search: z.string().min(3, "Minimum search length is 3 characters"),
+      })
+      .safeParse(res);
+    if (!success) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    const yt = new Yt();
+    await yt.initialize();
+    const songs = await yt.searchSongs(data.search);
+    const search = await prisma.trendingSearch.findFirst({
+      where: {
+        AND: [
+          {
+            search: data.search,
+          },
+          {
+            created: {
+              gte: startOfDay(new Date()),
+            },
+          },
+        ],
+      },
+    });
+    if (search?.id) {
+      await prisma.trendingSearch.update({
+        where: {
+          id: search.id,
+        },
+        data: {
+          searches: { increment: 1 },
+        },
+      });
+      return;
+    }
+    await prisma.trendingSearch.create({
+      data: {
+        created: new Date(),
+        search: data.search,
+        searches: 1,
+        videoId: songs[0].videoId,
+      },
+    });
+  } catch (error) {}
+}
