@@ -81,5 +81,12 @@ export async function PUT(req: NextRequest) {
         videoId: songs[0].videoId,
       },
     });
-  } catch (error) {}
+    return NextResponse.json(search, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
