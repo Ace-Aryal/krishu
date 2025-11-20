@@ -4,6 +4,12 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
+    if (!search)
+      return NextResponse.json(
+        { error: "Search is required" },
+        { status: 400 }
+      );
+    console.log(search, "search");
     const yt = new Yt();
     await yt.initialize();
     const songs = await yt.searchSongs(search);
