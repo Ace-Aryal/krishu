@@ -17,14 +17,25 @@ export async function POST(req: Request) {
     const h = await headers();
     console.log("here 18");
 
+    const wh = new Webhook(WEBHOOK_SECRET);
+
+    console.log("here 22");
+
+    const svixId = h.get("svix-id");
+    const svixTimestamp = h.get("svix-timestamp");
+    const svixSignature = h.get("svix-signature");
+
+    if (!svixId || !svixTimestamp || !svixSignature) {
+      return new Response("Missing Svix headers", { status: 400 });
+    }
+
     const headerPayload = {
-      "svix-id": h.get("svix-id")!,
-      "svix-timestamp": h.get("svix-timestamp")!,
-      "svix-signature": h.get("svix-signature")!,
+      "svix-id": svixId.trim(),
+      "svix-timestamp": svixTimestamp.trim(),
+      "svix-signature": svixSignature.trim(),
     };
 
-    const wh = new Webhook(WEBHOOK_SECRET);
-    console.log("here 26");
+    console.log("here 38");
     let event: any;
     try {
       // Pass raw buffer instead of string
