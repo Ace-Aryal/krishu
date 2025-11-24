@@ -54,6 +54,7 @@ export async function POST(req: Request) {
     // });
     return new Response(data, { status: 200 });
   } catch (error) {
+    console.error(error, "error in webhook");
     return new Response(JSON.stringify(error), { status: 500 });
   }
 }
