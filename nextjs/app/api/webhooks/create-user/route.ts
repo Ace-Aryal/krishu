@@ -1,20 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
-import { NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
-    if (!WEBHOOK_SECRET) {
-      throw new Error("Missing CLERK_WEBHOOK_SECRET");
-    }
+    if (!WEBHOOK_SECRET) throw new Error("Missing CLERK_WEBHOOK_SECRET");
 
-    // 1. Get raw body
-    const payload = await req.text();
+    // Get raw bytes
+    const payloadBuffer = await req.arrayBuffer();
 
-    // 2. Get signature headers
     const h = await headers();
 
     const headerPayload = {
@@ -23,19 +20,17 @@ export async function POST(req: Request) {
       "svix-signature": h.get("svix-signature")!,
     };
 
-    // 3. Verify payload
     const wh = new Webhook(WEBHOOK_SECRET);
-    // @ts-expect-error
-    let event: any;
 
+    let event: any;
     try {
-      event = wh.verify(payload, headerPayload); // IMPORTANT
+      // Pass raw buffer instead of string
+      event = wh.verify(Buffer.from(payloadBuffer), headerPayload);
     } catch (err) {
       console.error("Webhook verification failed", err);
       return new Response("Invalid signature", { status: 400 });
     }
 
-    // 4. Event is now verified and safe to use
     const { type, data } = event;
 
     if (type !== "user.created") {
@@ -44,15 +39,19 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
     console.log(data, "webhook data");
-    // const res = await prisma.user.create({
+
+    // Example: save user
+    // await prisma.user.create({
     //   data: {
     //     clerkId: data.id,
     //     email: data.email,
     //     name: data.name,
     //   },
     // });
-    return new Response(data, { status: 200 });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error, "error in webhook");
     return new Response(JSON.stringify(error), { status: 500 });
