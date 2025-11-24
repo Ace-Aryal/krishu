@@ -57,13 +57,13 @@ export async function POST(req: Request) {
     console.log(data, "webhook data");
 
     // Example: save user
-    // await prisma.user.create({
-    //   data: {
-    //     clerkId: data.id,
-    //     email: data.email,
-    //     name: data.name,
-    //   },
-    // });
+    await prisma.user.create({
+      data: {
+        clerkId: data.id,
+        email: data.email_addresses[0]?.email_address || "",
+        name: data.first_name + " " + data.last_name,
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
