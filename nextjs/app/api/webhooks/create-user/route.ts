@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     // 3. Verify payload
     const wh = new Webhook(WEBHOOK_SECRET);
-
+    // @ts-expect-error
     let event: any;
 
     try {
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     //     name: data.name,
     //   },
     // });
-    return new Response("OK", { status: 200 });
+    return new Response(data, { status: 200 });
   } catch (error) {
     return new Response(JSON.stringify(error), { status: 500 });
   }
