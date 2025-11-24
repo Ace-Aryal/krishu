@@ -6,13 +6,16 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-
+    console.log("here 9");
     if (!WEBHOOK_SECRET) throw new Error("Missing CLERK_WEBHOOK_SECRET");
+    console.log("here 11");
 
     // Get raw bytes
     const payloadBuffer = await req.arrayBuffer();
+    console.log("here 15");
 
     const h = await headers();
+    console.log("here 18");
 
     const headerPayload = {
       "svix-id": h.get("svix-id")!,
@@ -21,7 +24,7 @@ export async function POST(req: Request) {
     };
 
     const wh = new Webhook(WEBHOOK_SECRET);
-
+    console.log("here 26");
     let event: any;
     try {
       // Pass raw buffer instead of string
