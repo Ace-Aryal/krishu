@@ -1,14 +1,14 @@
 import { View, Text, Modal, Pressable } from "react-native";
 import React from "react";
-import { ThemePreference, useTheme } from "../providers/theme-provider";
 import RadioGroup from "./radio-group";
+import { useColorScheme } from "nativewind";
 
 interface ThemeDialogProps {
   open: boolean;
   onClose: () => void;
 }
 export default function ThemeDialog({ open, onClose }: ThemeDialogProps) {
-  const { preference, setPreference } = useTheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   return (
     <Modal transparent animationType="fade" visible={open}>
       <Pressable
@@ -24,10 +24,10 @@ export default function ThemeDialog({ open, onClose }: ThemeDialogProps) {
           <View>
             <RadioGroup
               onChange={(value) => {
-                setPreference(value as ThemePreference);
+                setColorScheme(value as "system" | "light" | "dark");
                 onClose();
               }}
-              value={preference}
+              value={colorScheme || "system"}
               options={[
                 { label: "System", value: "system" },
                 { label: "Light", value: "light" },

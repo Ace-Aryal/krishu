@@ -3,12 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Platform, StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/components/providers/theme-provider";
 import { Colors, DarkColors } from "@/constants/colors";
+import { useColorScheme } from "nativewind";
 
 export default function Layout() {
-  const { scheme } = useTheme();
-  const isDarkMode = scheme === "dark";
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
@@ -23,6 +23,7 @@ export default function Layout() {
         className={cn("flex-1", isDarkMode && "dark")}
       >
         <Tabs
+          key={colorScheme}
           screenOptions={{
             sceneStyle: {
               backgroundColor: isDarkMode

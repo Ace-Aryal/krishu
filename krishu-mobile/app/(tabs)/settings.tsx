@@ -3,20 +3,18 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { AppSwitch } from "@/components/switch";
 import ThemeDialog from "@/components/settings/theme-dialog";
-import { useTheme } from "@/components/providers/theme-provider";
 import { cn } from "@/lib/utils";
-
+import { useColorScheme } from "nativewind";
 export default function Settings() {
   const [notificationsAllowed, setNotificationsAllowed] = React.useState(false);
   const [isDarkModeDialogOpen, setIsDarkModeDialogOpen] = React.useState(false);
-  const { scheme } = useTheme();
-  const isDark = scheme === "dark";
+  const { colorScheme } = useColorScheme();
+
+  const isDark = colorScheme === "dark";
   return (
-    <View key={scheme} className={cn("flex-1 px-4 pt-8", isDark && "dark")}>
+    <View className={cn("flex-1 px-4 pt-8", isDark && "dark")}>
       <View className="">
-        <Text className="text-foreground dark:text-foreground-dark text-5xl font-medium">
-          Settings
-        </Text>
+        <Text className="text-foreground  text-5xl font-medium">Settings</Text>
       </View>
       <ScrollView style={{ flex: 1 }} className="pt-10 ">
         <View className="flex-row items-center gap-3 flex-1 mb-4 active:bg-gray-100 dark:active:bg-gray-800 rounded-xl p-3">
